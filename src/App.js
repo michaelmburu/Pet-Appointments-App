@@ -1,33 +1,53 @@
-import { BiCalendar, BiTrash } from 'react-icons/bi';
+import { useState, useEffect, useCallback, useDebugValue } from 'react';
+import { BiCalendar } from 'react-icons/bi';
 import Search from './components/Search';
 import AddAppointment from './components/AddAppointment';
-import appointmentList from './data.json';
+import AppointmentInfo from './components/AppointmentInfo';
 
 function App() {
+
+  let [appointmentList, setAppointmentList] = useState([]);
+  let [query, setQuery] = useState("");
+
+  const filteredAppointments = appointmentList.filter(
+    item => {
+      return (
+        item.petName.toLowerCase().includes(query.toLowerCase()) ||
+        item.ownerName.toLowerCase().includes(query.toLowerCase()) ||
+        item.aptNotes.toLowerCase().includes(query.toLowerCase())
+      )
+    }
+  )
+
+  // Load appointments to the appointment Info component
+  const fetchData = useCallback(() => {
+    fetch('./data.json')
+      .then(response => response.json())
+      .then(data => {setAppointmentList(data)
+      })
+  }, []);
+
+  // Monitor the appointment data and refetch if it changes
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
   return (
     <div className="App container mx-auto mt-3 font-thin">
       <h1 className='text-5xl mb-3'>
       <BiCalendar className="inline-block text-red-400 align-top" />Your Appointments</h1>
       <AddAppointment />
-      <Search />
+      <Search query={query} onQueryChange={myQuery => setQuery(myQuery)}/>
 
       <ul className='divide-y divide-gray-200'>
         {
-          appointmentList.map(appointment => (
-            
-              <li className="px-3 py-3 flex items-start">
-                <button type="button"
-                  className="p-1.5 mr-1.5 mt-1 rounded text-white bg-red-500 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  <BiTrash /></button>
-                <div className="flex-grow">
-                  <div className="flex items-center">
-                    <span className="flex-none font-medium text-2xl text-blue-500">{appointment.petName}</span>
-                    <span className="flex-grow text-right">aptDate</span>
-                  </div>
-                  <div><b className="font-bold text-blue-500">Owner:</b> {appointment.ownerName}</div>
-                  <div className="leading-tight">{appointment.aptNotes}</div>
-                </div>
-              </li>
+          filteredAppointments.map(appointment => (
+            <AppointmentInfo key={appointment.id} 
+              appointment={appointment} 
+              onDeleteAppointment= {
+                appointmentId => setAppointmentList(appointmentList.filter(appointment => appointment.id !== appointmentId))
+              }
+            />             
           ))
         }
       </ul>
