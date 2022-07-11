@@ -9,7 +9,7 @@ const AppointmentInfo = ({appointment, onDeleteAppointment}) => {
         <div className="flex-grow">
           <div className="flex items-center">
             <span className="flex-none font-medium text-2xl text-blue-500">{appointment.petName}</span>
-            <span className="flex-grow text-right">aptDate</span>
+            <span className="flex-grow text-right">{appointment.aptDate}</span>
           </div>
           <div><b className="font-bold text-blue-500">Owner:</b> {appointment.ownerName}</div>
           <div className="leading-tight">{appointment.aptNotes}</div>
