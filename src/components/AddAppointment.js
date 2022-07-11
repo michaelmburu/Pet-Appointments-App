@@ -15,7 +15,7 @@ const AddAppointment = ({onSendAppointmentInfo, lastId}) => {
     let [formData, setFormData] = useState(clearData);
 
     function formDataPublish() {
-      const appointmentInfo = {
+        const appointmentInfo = {
         id: lastId + 1,
         ownerName: formData.ownerName,
         petName: formData.petName,
